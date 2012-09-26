@@ -23,7 +23,11 @@
 
         <td class="game-cell" data-type="{{ type }}">
             {% if discovered == false %}
+                {#% if type == constant('Loiste\\MinesweeperBundle\\Model\\GameObject::TYPE_EMPTY') %}
+                <img src="{{ asset('bundles/loisteminesweeper/images/empty.png') }}" />
+                {% else %#}
                 <img src="{{ asset('bundles/loisteminesweeper/images/cell.png') }}" />
+                {#% endif %#}
             {% else %}
                 {% if type == constant('Loiste\\MinesweeperBundle\\Model\\GameObject::TYPE_NUMBER') %}
                 <img src="{{ asset('bundles/loisteminesweeper/images/' ~ gameObject.number ~ '.png') }}" />

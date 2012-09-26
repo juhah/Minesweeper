@@ -79,7 +79,9 @@ class Game
      *
      */
     public function updateNumbers($row, $col) {
-        if($this->gameArea[$row][$col]->type == GameObject::TYPE_MINE) {
+        $obj = &$this->gameArea[$row][$col];
+
+        if($obj->type == GameObject::TYPE_MINE) {
             return;
         }
 
@@ -100,8 +102,6 @@ class Game
         }
 
         // set type and number according to found mines
-        $obj = &$this->gameArea[$row][$col];
-
         if($mines == 0) {
             $obj->type = GameObject::TYPE_EMPTY;
             $obj->setNumber(0);
@@ -136,7 +136,11 @@ class Game
         $obj->setDiscovered(TRUE);
 
         // if we hit a mine, it's game over
-        if($obj->type == GameObject::TYPE_MINE) {
+        if($obj->type == GameObject::TYPE_EMPTY) {
+            //echo "$row:$col<br>";
+            $this->discoverEmpties($row, $col);
+        }
+        else if($obj->type == GameObject::TYPE_MINE) {
             $obj->type = GameObject::TYPE_EXPLOSION;
 
             $this->revealMines();
@@ -144,5 +148,36 @@ class Game
         }
 
         //$this->updateGame();
+    }
+
+    public function discoverEmpties($row, $col) {
+        $obj = &$this->gameArea[$row][$col];
+
+        if($obj->type != GameObject::TYPE_EMPTY) {
+            return;
+        }
+
+        // set boundaries
+        $row_start = max($row - 1, 0);
+        $row_end   = min($row + 1, GAME_AREA_ROWS - 1);
+        $col_start = max($col - 1, 0);
+        $col_end   = min($col + 1, GAME_AREA_COLS - 1);
+
+        for($i = $row_start; $i <= $row_end; $i++) {
+            for($j = $col_start; $j <= $col_end; $j++) {
+                if($i == $row && $j == $col) {
+                    continue;
+                }
+
+                $tmpobj = &$this->gameArea[$i][$j];
+                if($tmpobj->type != GameObject::TYPE_MINE && !$tmpobj->discovered) {
+                    $tmpobj->setDiscovered(TRUE);
+
+                    if($tmpobj->type == GameObject::TYPE_EMPTY) {
+                        $this->discoverEmpties($i, $j);
+                    }
+                }
+            }
+        }
     }
 }
