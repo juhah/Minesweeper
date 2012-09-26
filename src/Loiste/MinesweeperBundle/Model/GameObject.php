@@ -15,10 +15,17 @@ class GameObject
     const TYPE_MINE_DISCOVERED = 5;
 
     public $type;
+    public $number;
+    public $discovered;
 
-    public function __construct($type = 0)
+    /**
+     *
+     */
+    public function __construct($type = 0, $discovered = FALSE)
     {
         $this->type = $type;
+        $this->number = 0;
+        $this->discovered = $discovered;
     }
 
     public function isMine()
@@ -41,6 +48,20 @@ class GameObject
      */
     public function getNumber()
     {
-        return floor(mt_rand(0, 7)) + 1;
+        return $this->number;
+    }
+
+    /**
+     *
+     */
+    public function setNumber($number) {
+        $this->number = $number;
+    }
+
+    /**
+     *
+     */
+    public function setDiscovered($discovered) {
+        $this->discovered = $discovered;
     }
 }

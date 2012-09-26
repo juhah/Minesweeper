@@ -1,5 +1,8 @@
 <?php
 
+// hack to get rid of PHP errors on with sf script
+date_default_timezone_set("Europe/Helsinki");
+
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
 $loader = require __DIR__.'/../vendor/autoload.php';

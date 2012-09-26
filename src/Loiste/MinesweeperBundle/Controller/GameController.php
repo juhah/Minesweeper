@@ -18,7 +18,7 @@ class GameController extends Controller
         $session->set('game', $game);
 
         return $this->render('LoisteMinesweeperBundle:Default:index.html.twig', array(
-            'gameArea' => $game->gameArea
+            'game' => $game,
         ));
     }
 
@@ -31,8 +31,13 @@ class GameController extends Controller
         $session->start();
         $game = $session->get('game'); /** @var $game Game */
 
+        // if game is running, check the tile
+        if($game && $game->isRunning()) {
+            $game->checkTile($row, $column);            
+        }
+
         return $this->render('LoisteMinesweeperBundle:Default:index.html.twig', array(
-            'gameArea' => $game->gameArea
+            'game' => $game,
         ));
     }
 }
