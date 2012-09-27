@@ -15,11 +15,11 @@ class GameObject
     const TYPE_MINE_DISCOVERED = 5;
 
     public $type;
-    public $number;
-    public $discovered;
+    public $number; 
+    public $discovered; 
 
     /**
-     *
+     * Constructor
      */
     public function __construct($type = 0, $discovered = FALSE)
     {
@@ -28,16 +28,25 @@ class GameObject
         $this->discovered = $discovered;
     }
 
+    /**
+     * 
+     */
     public function isMine()
     {
         return $this->type === GameObject::TYPE_MINE;
     }
 
+    /**
+     * 
+     */
     public function isNumber()
     {
         return $this->type === GameObject::TYPE_NUMBER;
     }
 
+    /**
+     * 
+     */
     public function isEmpty()
     {
         return $this->type === GameObject::TYPE_EMPTY;
@@ -52,14 +61,14 @@ class GameObject
     }
 
     /**
-     *
+     * Sets the number of mines
      */
     public function setNumber($number) {
         $this->number = $number;
     }
 
     /**
-     *
+     * Sets cell discovered
      */
     public function setDiscovered($discovered) {
         $this->discovered = $discovered;

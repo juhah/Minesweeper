@@ -51,7 +51,7 @@ class Game
             }
         }
         
-        // randomize and set game area
+        // randomize and set game area columns to rows
         shuffle($objects);
 
         for ($row = 0; $row < GAME_AREA_ROWS; $row++) {
@@ -59,8 +59,8 @@ class Game
         }
 
         // start game and update mine numbers
-        $this->running = true;
         $this->setupBoard();
+        $this->running = true;
     }
 
     /**
@@ -80,14 +80,14 @@ class Game
     }
 
     /**
-     *
+     * Test if game is running or not
      */
     public function isRunning() {
         return $this->running;
     }
 
     /**
-     *
+     * Sets up numbers to tiles based on neighbouring cell mines
      */
     private function setupBoard() {
         for($row = 0; $row < GAME_AREA_ROWS; $row++) {
@@ -98,7 +98,7 @@ class Game
     }
 
     /**
-     *
+     * Update the mine count of given cell
      */
     private function updateNumbers($row, $col) {
         $obj = &$this->gameArea[$row][$col];
@@ -109,7 +109,7 @@ class Game
 
         $mines = 0;
 
-        // set boundaries
+        // set neighbour boundaries and count surrounding mines
         $row_start = max($row - 1, 0);
         $row_end   = min($row + 1, GAME_AREA_ROWS - 1);
         $col_start = max($col - 1, 0);
@@ -135,7 +135,7 @@ class Game
     }
 
     /**
-     *
+     * Reveal all mines on the board
      */
     private function revealMines() {
         for($row = 0; $row < GAME_AREA_ROWS; $row++) {
@@ -150,18 +150,19 @@ class Game
     }
 
     /**
-     *
+     * Check cell after user makes a move to this cell
      */
     public function checkCell($row, $col) {
         $obj = &$this->gameArea[$row][$col];
 
         $obj->setDiscovered(TRUE);
 
-        // if we hit a mine, it's game over
+        // on empty cell, show neighbouring empty cells also
         if($obj->type == GameObject::TYPE_EMPTY) {
             $this->showAdjacentEmptyCells($row, $col);
         }
         else if($obj->type == GameObject::TYPE_MINE) {
+            // if we hit a mine, it's game over
             $obj->type = GameObject::TYPE_EXPLOSION;
 
             $this->revealMines();
@@ -169,6 +170,9 @@ class Game
         }
     }
 
+    /**
+     * Shows empty cells and also neighbouring empty cells (expanding reveal)
+     */
     public function showAdjacentEmptyCells($row, $col) {
         $obj = &$this->gameArea[$row][$col];
 
@@ -184,17 +188,20 @@ class Game
 
         for($i = $row_start; $i <= $row_end; $i++) {
             for($j = $col_start; $j <= $col_end; $j++) {
-                if($i == $row && $j == $col) {
+                $tmpobj = &$this->gameArea[$i][$j];
+
+                // skip cell if discovered or a mine
+                if($i == $row && $j == $col || 
+                    $tmpobj->type == GameObject::TYPE_MINE ||
+                    $tmpobj->discovered) {
                     continue;
                 }
 
-                $tmpobj = &$this->gameArea[$i][$j];
-                if($tmpobj->type != GameObject::TYPE_MINE && !$tmpobj->discovered) {
-                    $tmpobj->setDiscovered(TRUE);
+                $tmpobj->setDiscovered(TRUE);
 
-                    if($tmpobj->type == GameObject::TYPE_EMPTY) {
-                        $this->showAdjacentEmptyCells($i, $j);
-                    }
+                // recursively check empty undiscoreved neighbours also
+                if($tmpobj->type == GameObject::TYPE_EMPTY) {
+                    $this->showAdjacentEmptyCells($i, $j);
                 }
             }
         }

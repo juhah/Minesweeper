@@ -8,12 +8,17 @@ use Loiste\MinesweeperBundle\Model\Game;
 
 class GameController extends Controller
 {
+    /**
+     * Start page to choose difficulty
+     */
     public function beginAction() {
         return $this->render('LoisteMinesweeperBundle:Default:begin.html.twig');
     }
 
-    public function startAction()
-    {
+    /**
+     * Start the game
+     */
+    public function startAction() {
         // set difficulty (=mine density) based on user choice, defaults to medium
         $difficulty = $this->getRequest()->get('difficulty'); 
 
@@ -41,8 +46,10 @@ class GameController extends Controller
         ));
     }
 
-    public function makeMoveAction()
-    {
+    /**
+     * Making a move action
+     */
+    public function makeMoveAction() {
         $row = $this->getRequest()->get('row'); // Retrieves the row index.
         $column = $this->getRequest()->get('column'); // Retrieves the column index.
 
