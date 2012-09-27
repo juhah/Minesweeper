@@ -1,6 +1,6 @@
 <?php
 
-// hack to get rid of PHP errors on with sf script
+// hack to get rid of PHP errors on OS X with sf script
 date_default_timezone_set("Europe/Helsinki");
 
 use Doctrine\Common\Annotations\AnnotationRegistry;

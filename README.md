@@ -8,3 +8,7 @@ A simple Minesweeper game by Juha Haavisto based on Loiste code challenge.
 * Clicking on a mine will blow it up, ending the game
 * Clicking on an empty cell will reveal neighbouring empty cells
 * Controllable mine density via difficulty level
+
+---
+
+Tested with OS X Lion, Apache/2.2.22 and PHP 5.3.15.
