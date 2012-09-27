@@ -8,10 +8,29 @@ use Loiste\MinesweeperBundle\Model\Game;
 
 class GameController extends Controller
 {
+    public function beginAction() {
+        return $this->render('LoisteMinesweeperBundle:Default:begin.html.twig');
+    }
+
     public function startAction()
     {
+        // set difficulty (=mine density) based on user choice, defaults to medium
+        $difficulty = $this->getRequest()->get('difficulty'); 
+
+        $difficulties = array(
+            'easy' => Game::DIFFICULTY_EASY,
+            'medium' => Game::DIFFICULTY_MEDIUM,
+            'hard' => Game::DIFFICULTY_HARD,
+        );
+
+        $value = Game::DIFFICULTY_MEDIUM;
+
+        if(isset($difficulty) && isset($difficulties[$difficulty])) {
+            $value = $difficulties[$difficulty];
+        }
+
         // Setup an empty game. To keep things very simple for candidates, we just store info on the session.
-        $game = new Game();
+        $game = new Game($value);
 
         $session = new Session();
         $session->start();
@@ -33,7 +52,7 @@ class GameController extends Controller
 
         // if game is running, check the tile
         if($game && $game->isRunning()) {
-            $game->checkTile($row, $column);            
+            $game->checkCell($row, $column);            
         }
 
         return $this->render('LoisteMinesweeperBundle:Default:index.html.twig', array(

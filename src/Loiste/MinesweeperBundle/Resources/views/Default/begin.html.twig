@@ -1,0 +1,21 @@
+{% extends 'LoisteMinesweeperBundle::base.html.twig' %}
+
+{% block body %}
+
+<h1>Minesweeper</h1>
+
+<form action="{{ path('LoisteMinesweeperBundle_start') }}" method="get">
+
+<h3>Choose difficulty:</h3>
+
+<select name="difficulty">
+	<option value="easy">Easy</option>
+	<option value="medium">Medium</option>
+	<option value="hard">Hard</option>
+</select>
+
+<p><input type="submit" value="Start" /></p>
+
+</form>
+
+{% endblock %}

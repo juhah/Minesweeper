@@ -6,9 +6,12 @@
 
 {% set currentPath = path(app.request.attributes.get('_route')) %}
 {% set gameArea = game.gameArea %}
+{% set difficulty = ["Easy", "Medium", "Hard"] %}
 
-{% if game.running == false %}
-    <h3>Game over! <a href="{{ path('LoisteMinesweeperBundle_start') }}">Try again?</a></h3>
+{% if game.running == true %}
+    <h3>Difficulty: {{ difficulty[game.difficulty] }}</h3>
+{% else %}
+    <h3>Game over! <a href="{{ path('LoisteMinesweeperBundle_begin') }}">Try again?</a></h3>
 {% endif %}
 
 <table id="game" data-route-make-move="{{ path('LoisteMinesweeperBundle_makeMove') }}">
@@ -23,11 +26,11 @@
 
         <td class="game-cell" data-type="{{ type }}">
             {% if discovered == false %}
-                {#% if type == constant('Loiste\\MinesweeperBundle\\Model\\GameObject::TYPE_EMPTY') %}
-                <img src="{{ asset('bundles/loisteminesweeper/images/empty.png') }}" />
-                {% else %#}
+                {% if type == constant('Loiste\\MinesweeperBundle\\Model\\GameObject::TYPE_MINE') %}
+                <img src="{{ asset('bundles/loisteminesweeper/images/mine.png') }}" />
+                {% else %}
                 <img src="{{ asset('bundles/loisteminesweeper/images/cell.png') }}" />
-                {#% endif %#}
+                {% endif %}
             {% else %}
                 {% if type == constant('Loiste\\MinesweeperBundle\\Model\\GameObject::TYPE_NUMBER') %}
                 <img src="{{ asset('bundles/loisteminesweeper/images/' ~ gameObject.number ~ '.png') }}" />

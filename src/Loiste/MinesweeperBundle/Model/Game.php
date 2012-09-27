@@ -4,13 +4,16 @@ namespace Loiste\MinesweeperBundle\Model;
 
 define('GAME_AREA_ROWS', 10);
 define('GAME_AREA_COLS', 20);
-define('MINE_DENSITY', 0.3);
 
 /**
  * This class represents a game model.
  */
 class Game
 {
+    const DIFFICULTY_EASY = 0;
+    const DIFFICULTY_MEDIUM = 1;
+    const DIFFICULTY_HARD = 2;
+
     /**
      * A two dimensional array of game objects.
      *
@@ -20,22 +23,25 @@ class Game
      */
     public $gameArea;
     public $running = false;
+    public $difficulty;
 
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($difficulty = Game::DIFFICULTY_MEDIUM)
     {
         // Upon constructing a new game instance, setup an empty game area.
         $this->gameArea = array();
 
+        $this->difficulty = $difficulty;
+
         // setup mines according to density
-        $tiles = GAME_AREA_ROWS * GAME_AREA_COLS;
-        $mines = round(MINE_DENSITY * $tiles);
+        $cells = GAME_AREA_ROWS * GAME_AREA_COLS;
+        $mines = round($this->getMineDensity($this->difficulty) * $cells);
         
         $objects = array();
 
-        for($i = 0; $i < $tiles; $i++) {
+        for($i = 0; $i < $cells; $i++) {
             // create the needed amount of mines
             if($i < $mines) {
                 $objects[] = new GameObject(GameObject::TYPE_MINE);
@@ -58,6 +64,22 @@ class Game
     }
 
     /**
+     * Get mine density based on diffculty
+     */
+    private function getMineDensity($difficulty) {
+        $value = 0.5; // default to medium
+
+        if($difficulty == Game::DIFFICULTY_EASY) {
+            $value = 0.2;
+        }
+        else if($difficulty == Game::DIFFICULTY_HARD) {
+            $value = 0.7;
+        }
+
+        return $value;
+    }
+
+    /**
      *
      */
     public function isRunning() {
@@ -67,7 +89,7 @@ class Game
     /**
      *
      */
-    public function setupBoard() {
+    private function setupBoard() {
         for($row = 0; $row < GAME_AREA_ROWS; $row++) {
             for($col = 0; $col < GAME_AREA_COLS; $col++) {
                 $this->updateNumbers($row, $col);
@@ -78,7 +100,7 @@ class Game
     /**
      *
      */
-    public function updateNumbers($row, $col) {
+    private function updateNumbers($row, $col) {
         $obj = &$this->gameArea[$row][$col];
 
         if($obj->type == GameObject::TYPE_MINE) {
@@ -115,7 +137,7 @@ class Game
     /**
      *
      */
-    public function revealMines() {
+    private function revealMines() {
         for($row = 0; $row < GAME_AREA_ROWS; $row++) {
             for($col = 0; $col < GAME_AREA_COLS; $col++) {
                 $obj = $this->gameArea[$row][$col];
@@ -130,15 +152,14 @@ class Game
     /**
      *
      */
-    public function checkTile($row, $col) {
+    public function checkCell($row, $col) {
         $obj = &$this->gameArea[$row][$col];
 
         $obj->setDiscovered(TRUE);
 
         // if we hit a mine, it's game over
         if($obj->type == GameObject::TYPE_EMPTY) {
-            //echo "$row:$col<br>";
-            $this->discoverEmpties($row, $col);
+            $this->showAdjacentEmptyCells($row, $col);
         }
         else if($obj->type == GameObject::TYPE_MINE) {
             $obj->type = GameObject::TYPE_EXPLOSION;
@@ -146,11 +167,9 @@ class Game
             $this->revealMines();
             $this->running = false;
         }
-
-        //$this->updateGame();
     }
 
-    public function discoverEmpties($row, $col) {
+    public function showAdjacentEmptyCells($row, $col) {
         $obj = &$this->gameArea[$row][$col];
 
         if($obj->type != GameObject::TYPE_EMPTY) {
@@ -174,7 +193,7 @@ class Game
                     $tmpobj->setDiscovered(TRUE);
 
                     if($tmpobj->type == GameObject::TYPE_EMPTY) {
-                        $this->discoverEmpties($i, $j);
+                        $this->showAdjacentEmptyCells($i, $j);
                     }
                 }
             }

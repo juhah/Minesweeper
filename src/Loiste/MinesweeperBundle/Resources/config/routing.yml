@@ -1,5 +1,9 @@
-LoisteMinesweeperBundle_start:
+LoisteMinesweeperBundle_begin:
     pattern:  /
+    defaults: { _controller: LoisteMinesweeperBundle:Game:begin }
+
+LoisteMinesweeperBundle_start:
+    pattern:  /start
     defaults: { _controller: LoisteMinesweeperBundle:Game:start }
 
 LoisteMinesweeperBundle_makeMove:
